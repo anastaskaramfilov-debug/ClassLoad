@@ -1037,7 +1037,10 @@ const subj=s=>SUBJECTS.includes(s)?t(s):s;
 const DEFAULT_CLASSES=["8A","8B","9A","9B","10A","10B","11A","11B","12A","12B"];
 const ROLE_N={student:"Student",teacher:"Teacher",admin:"School admin",parent:"Parent"};
 const roleName=r=>t(ROLE_N[r]||r);
-const VIEW_WEEKS=3, STRIP_WEEKS=8, OVERVIEW_WEEKS=6;
+const STRIP_WEEKS=8, OVERVIEW_WEEKS=6;
+// how many weeks the calendar shows: 3 on a computer, 1 on a phone
+const PHONE_MQ=window.matchMedia?window.matchMedia("(max-width:640px)"):null;
+const viewWeeks=()=>PHONE_MQ&&PHONE_MQ.matches?1:3;
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const sc=s=>"var(--s-"+(SUBJECTS.includes(s)?s.toLowerCase():"other")+")";
 const pad=n=>String(n).padStart(2,"0");
@@ -1610,7 +1613,7 @@ function renderHero(){
     :[nextBig?t("Next big one: {what}, {day}.",{what:esc(subj(nextBig.subject))+" "+typeName(nextBig.type).toLowerCase(),day:dname(parse(nextBig.date))+" "+fmt(parse(nextBig.date))}):t("No tests coming up."),worst&&worst.p>=10?t("Watch the week of {d} ({p} pts).",{d:fmt(worst.m),p:worst.p}):""].join(" ");
   const max=Math.max(14,...Array.from({length:STRIP_WEEKS},(_,i)=>weekPts(addDays(HOME_MON,i*7))));
   let cols="",labels="";
-  for(let i=0;i<STRIP_WEEKS;i++){const m=addDays(HOME_MON,i*7),p=weekPts(m),l=p===0?"zero":level(p),inview=m>=S.viewMon&&m<addDays(S.viewMon,VIEW_WEEKS*7);
+  for(let i=0;i<STRIP_WEEKS;i++){const m=addDays(HOME_MON,i*7),p=weekPts(m),l=p===0?"zero":level(p),inview=m>=S.viewMon&&m<addDays(S.viewMon,viewWeeks()*7);
     cols+=`<button class="col${inview?" inview":""}" data-mon="${key(m)}" aria-label="${t("Week of {d}, {p} points",{d:fmt(m),p})}"><span class="barv ${l}" style="height:${p?Math.max(8,p/max*100):4}%">${p?`<span>${p}</span>`:""}</span></button>`;
     labels+=`<span class="${inview?"on":""}">${i===0?(WEEKEND?t("Next"):t("Now")):fmt(m)}</span>`}
   const limitPct=10/max*100;
@@ -1647,9 +1650,9 @@ function renderBoard(){
   document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.view===S.calView)));
   const tw=document.getElementById("thisWeek"); if(tw)tw.textContent=S.calView==="month"?t("This month"):t("This week");
   if(S.calView==="month")return renderMonth(b);
-  document.getElementById("rangeTitle").textContent=`${fmt(S.viewMon)} – ${fmt(addDays(S.viewMon,VIEW_WEEKS*7-3))}`;
+  document.getElementById("rangeTitle").textContent=`${fmt(S.viewMon)} – ${fmt(addDays(S.viewMon,viewWeeks()*7-3))}`;
   const staff=isStaff();
-  for(let wi=0;wi<VIEW_WEEKS;wi++){
+  for(let wi=0;wi<viewWeeks();wi++){
     const mon=addDays(S.viewMon,wi*7);
     const draftHere=staff&&S.tab==="plan"&&S.draft.date&&key(mondayOf(parse(S.draft.date)))===key(mon);
     const base=weekPts(mon),add=draftHere?TYPES[S.draft.type].w:0,pts=base+add,lv=level(pts),bw=Math.min(100,base/14*100);
@@ -1840,12 +1843,12 @@ function renderPlanner(p,tabs){
     <p class="hint small">${t("Tip: click a task on the calendar to edit it, or drag it to another day.")}</p>
     ${reminderCard(true)}`;
   p.querySelector("#subj").onchange=e=>{D.subject=e.target.value;render()};
-  p.querySelector("#date").onchange=e=>{const v=e.target.value;if(!v)return;const d=parse(v);if(d.getDay()%6===0){toast(t("Pick a school day (Mon–Fri)"));e.target.value=D.date||"";return}D.date=v;const m=mondayOf(d);if(m<S.viewMon||m>=addDays(S.viewMon,VIEW_WEEKS*7))S.viewMon=m;render()};
+  p.querySelector("#date").onchange=e=>{const v=e.target.value;if(!v)return;const d=parse(v);if(d.getDay()%6===0){toast(t("Pick a school day (Mon–Fri)"));e.target.value=D.date||"";return}D.date=v;const m=mondayOf(d);if(m<S.viewMon||m>=addDays(S.viewMon,viewWeeks()*7))S.viewMon=m;render()};
   p.querySelector("#note").oninput=e=>{D.note=e.target.value};
   p.querySelector("#lnk").oninput=e=>{D.link=e.target.value};
   const rep=p.querySelector("#rep"); if(rep)rep.onchange=e=>{D.repeat=Number(e.target.value)||0;renderPanel()};
   p.querySelectorAll(".types button").forEach(b=>b.onclick=()=>{D.type=b.dataset.t;render()});
-  p.querySelectorAll(".sug").forEach(b=>b.onclick=()=>{D.date=b.dataset.k;const m=mondayOf(parse(D.date));if(m<S.viewMon||m>=addDays(S.viewMon,VIEW_WEEKS*7))S.viewMon=m;render();toast(t("Picked {d}",{d:dname(parse(D.date))+" "+fmt(parse(D.date))}))});
+  p.querySelectorAll(".sug").forEach(b=>b.onclick=()=>{D.date=b.dataset.k;const m=mondayOf(parse(D.date));if(m<S.viewMon||m>=addDays(S.viewMon,viewWeeks()*7))S.viewMon=m;render();toast(t("Picked {d}",{d:dname(parse(D.date))+" "+fmt(parse(D.date))}))});
   p.querySelector("#saveBtn").onclick=editing?saveEdit:addTask;
   const ce=p.querySelector("#cancelEdit"); if(ce)ce.onclick=()=>{cancelEdit();render()};
   const ds=p.querySelector("#delSeries"); if(ds)ds.onclick=()=>deleteSeries(editTask.series);
@@ -2698,6 +2701,9 @@ async function deleteMyData(){
 ["gesturestart","gesturechange","gestureend"].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 // double-tap zoom is turned off by touch-action: manipulation in the CSS, so fast taps (roll call) still register
+
+if(PHONE_MQ){const re=()=>{if(S.user&&CUR&&!S.info&&!S.recordOf&&document.getElementById("board"))renderBoard()};
+  if(PHONE_MQ.addEventListener)PHONE_MQ.addEventListener("change",re);else if(PHONE_MQ.addListener)PHONE_MQ.addListener(re)}
 
 // ================= boot =================
 if(S.linkPending){const saved=ls.get("cl-email");if(saved)setTimeout(()=>finishEmailLink(saved),0)}
