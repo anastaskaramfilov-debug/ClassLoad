@@ -973,6 +973,17 @@ html,body{overflow-x:clip;overscroll-behavior:none;touch-action:manipulation;-we
 }
 .sidenav ul.nav-mob{display:none}
 @media (max-width:980px){.sidenav ul.nav-full{display:none}.sidenav ul.nav-mob{display:flex}}
+/* phone/tablet: fixed app frame. The page scrolls inside .wrap, so the browser's toolbars never
+   collapse or expand while switching sections, and the bottom tab bar never jumps. */
+@media (max-width:980px){
+  html,body{height:100%;overflow:hidden}
+  :root{padding-top:0;padding-bottom:0}
+  .wrap{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    padding:env(safe-area-inset-top,0px) 16px 0;max-width:none}
+  .sidenav{transform:translateZ(0);will-change:transform}
+  .nav-mob button{transition:color .15s}
+}
+@media (max-width:640px){.wrap{padding-left:12px;padding-right:12px}}
 
 </style>
 </head>
@@ -1305,6 +1316,9 @@ function wireBar(r){
   r.querySelector("#langBtn").onclick=()=>{LANG=LANG==="bg"?"en":"bg";ls.set("cl-lang",LANG);auth.languageCode=LANG;document.documentElement.lang=LANG;syncTokenLang();rebuild()};
   r.querySelector("#themeBtn").onclick=()=>{THEME=THEME==="auto"?"light":THEME==="light"?"dark":"auto";ls.set("cl-theme",THEME==="auto"?null:THEME);applyTheme();renderBar()};
 }
+// on phones the page scrolls inside .wrap (so Safari's toolbar never resizes the screen and the bottom bar stays put)
+function toTop(smooth){const w=document.querySelector(".wrap");try{window.scrollTo({top:0,behavior:smooth?"smooth":"auto"})}catch(e){}
+  if(w&&w.scrollHeight>w.clientHeight){try{w.scrollTo({top:0,behavior:smooth?"smooth":"auto"})}catch(e){w.scrollTop=0}}}
 function rebuild(){const a=document.getElementById("app");a.innerHTML="";render()}
 
 function gateFrame(main){
@@ -1750,7 +1764,7 @@ const NAV_ICON={
 const NAV_MORE='<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>';
 function renderNav(list){
   const n=document.getElementById("sidenav"); if(!n)return;
-  const go=k=>{if(S.tab===k)return;S.tab=k;S.armed=null;render();window.scrollTo({top:0})};
+  const go=k=>{if(S.tab===k)return;S.tab=k;S.armed=null;render();toTop()};
   // phone: the first three sections in the bar, the rest under "More"
   const prim=list.length>4?list.slice(0,3):list, rest=list.length>4?list.slice(3):[];
   const inRest=rest.some(([k])=>k===S.tab), restCount=rest.some(([,l])=>l.includes('class="count"'));
@@ -1837,7 +1851,7 @@ function renderPlanner(p,tabs){
   const ds=p.querySelector("#delSeries"); if(ds)ds.onclick=()=>deleteSeries(editTask.series);
   const le=p.querySelector("#loadEx"); if(le)le.onclick=loadExamples;
   const cx=p.querySelector("#clearEx"); if(cx)cx.onclick=clearExamples;
-  p.querySelector("#prevBtn").onclick=()=>{cancelEdit();S.preview=c;S.draft.date=null;render();window.scrollTo({top:0,behavior:"smooth"})};
+  p.querySelector("#prevBtn").onclick=()=>{cancelEdit();S.preview=c;S.draft.date=null;render();toTop(true)};
   wireReminders(p);
 }
 
@@ -1858,7 +1872,7 @@ function renderOverview(p,tabs){
       <p class="hint small">${t("Download the term's test schedule (график) for the principal to approve and post.")}</p>
       <div class="exp-row"><button class="sbtn" id="dlSched">${t("Download test schedule (CSV)")}</button></div></div>`;
   p.querySelector("#dlSched").onclick=()=>exportSchedule(all);
-  p.querySelectorAll(".hc").forEach(b=>b.onclick=()=>{S.cls=b.dataset.c;ls.set("cl-class",S.cls);S.viewMon=parse(b.dataset.m);S.tab="plan";S.draft.date=null;render();window.scrollTo({top:0,behavior:"smooth"})});
+  p.querySelectorAll(".hc").forEach(b=>b.onclick=()=>{S.cls=b.dataset.c;ls.set("cl-class",S.cls);S.viewMon=parse(b.dataset.m);S.tab="plan";S.draft.date=null;render();toTop(true)});
 }
 
 function renderRequests(p,tabs){
@@ -2344,9 +2358,9 @@ function openRecord(uid,name,cls){
   if(exUnsub){try{exUnsub()}catch(e){}exUnsub=null} S.excuses={}; S.excForm=null;
   const eq=canWriteRecords()?query(collection(db,"excuses"),where("school","==",CUR.school),where("student","==",uid)):CUR.role==="parent"?query(collection(db,"excuses"),where("by","==",S.user.uid)):null;
   if(eq)exUnsub=onSnapshot(eq,s=>{const o={};s.forEach(d=>{o[d.id]=normEx(d.id,d.data())});S.excuses=o;if(S.recordOf)render()},()=>{});
-  const a=document.getElementById("app");a.innerHTML="";render();window.scrollTo({top:0});
+  const a=document.getElementById("app");a.innerHTML="";render();toTop();
 }
-function closeRecord(){S.recordOf=null;S.recArm=null;if(exUnsub){try{exUnsub()}catch(e){}exUnsub=null}S.excuses={};if(recUnsub){try{recUnsub()}catch(e){}recUnsub=null}const a=document.getElementById("app");a.innerHTML="";render();window.scrollTo({top:0})}
+function closeRecord(){S.recordOf=null;S.recArm=null;if(exUnsub){try{exUnsub()}catch(e){}exUnsub=null}S.excuses={};if(recUnsub){try{recUnsub()}catch(e){}recUnsub=null}const a=document.getElementById("app");a.innerHTML="";render();toTop()}
 
 function renderRecord(app){
   const staff=canWriteRecords(), all=[...S.recs].sort((a,b)=>b.date.localeCompare(a.date)||b.at-a.at), recs=live(all), voided=all.filter(r=>r.void);
@@ -2491,8 +2505,8 @@ function renderFoot(){
   f.querySelector("#fHelp").onclick=()=>openInfo("help");
   f.querySelector("#fPriv").onclick=()=>openInfo("privacy");
 }
-function openInfo(which){S.info=which;deleteArmed=false;const a=document.getElementById("app");a.innerHTML="";render();window.scrollTo({top:0})}
-function closeInfo(){S.info=null;const a=document.getElementById("app");a.innerHTML="";render();window.scrollTo({top:0})}
+function openInfo(which){S.info=which;deleteArmed=false;const a=document.getElementById("app");a.innerHTML="";render();toTop()}
+function closeInfo(){S.info=null;const a=document.getElementById("app");a.innerHTML="";render();toTop()}
 
 const HELP={
  en:[
