@@ -2876,12 +2876,14 @@ C) option
 D) option
 Answer: B
 
-Exactly one option is correct. Mix easy and harder questions. Be factually correct and age-appropriate. If the topic is not a school topic, write questions about the nearest school topic.`;
+Exactly one option is correct. The other 3 options must be DIFFERENT wrong answers that sound plausible (for example other verb forms, other dates, other organs). Never repeat an option. Never write the same option twice with different letters.
+Mix easy and harder questions. Be factually correct and age-appropriate. If the topic is not a school topic, write questions about the nearest school topic.`;
   const user=`Topic: ${topic}${subject?` (subject: ${subj(subject)})`:""}${CUR&&CUR.cls?` · class ${CUR.cls}`:""}`;
   const bot={text:"",quiz:null,staff}; A.msgs.push(bot); A.busy=true; renderAI();
   try{
-    const r=await llmEngine.chat.completions.create({messages:[{role:"system",content:sys},{role:"user",content:user}],temperature:0.7,max_tokens:900,extra_body:{enable_thinking:false}});
-    const qs=parseQuiz((r.choices&&r.choices[0]&&r.choices[0].message&&r.choices[0].message.content)||"");
+    const gen=async temp=>{const r=await llmEngine.chat.completions.create({messages:[{role:"system",content:sys},{role:"user",content:user}],temperature:temp,max_tokens:900,extra_body:{enable_thinking:false}});
+      return parseQuiz((r.choices&&r.choices[0]&&r.choices[0].message&&r.choices[0].message.content)||"")};
+    let qs=await gen(0.7); if(qs.length<3){const more=await gen(0.9);if(more.length>qs.length)qs=more}
     if(qs.length){bot.quiz={topic,qs,picked:[]};
       bot.acts=[[t("New questions"),()=>llmQuiz(t("New questions: {t}",{t:topic}),topic,subject)]];
       if(staff)bot.acts.unshift([t("Copy questions"),()=>{const txt=quizText(bot.quiz);try{navigator.clipboard.writeText(txt).then(()=>toast(t("Copied. Paste it into your test.")),()=>toast(t("Couldn't copy.")))}catch(e){toast(t("Couldn't copy."))}}]);}
@@ -2901,7 +2903,10 @@ function parseQuiz(raw){
     if((m=s.match(/^(?:Answer|Correct answer|Отговор|Верен отговор)\s*[:\-]?\s*\(?([A-DА-Г])/i))){const c=m[1].toUpperCase();cur.ans=QZ_LET.includes(c)?QZ_LET.indexOf(c):QZ_CYR.indexOf(c);continue}
     if((m=s.match(/^\(?([A-DА-Г])[).:]\s*(.+)$/))&&cur.opts.length<4)cur.opts.push(m[2].trim());
   }
-  return out.filter(x=>x.q&&x.opts.length>=3&&x.ans!=null&&x.ans>=0&&x.ans<x.opts.length).slice(0,5)
+  const norm=v=>v.toLowerCase().replace(/[^0-9a-zа-я]+/gi,""), seenQ=new Set();
+  return out.filter(x=>{if(!x.q||x.opts.length<3||x.ans==null||x.ans<0||x.ans>=x.opts.length)return false;
+      const o=x.opts.map(norm); if(o.some(v=>!v)||new Set(o).size!==o.length)return false; // e.g. "taught / taught / taught / taught"
+      const nq=norm(x.q); if(seenQ.has(nq))return false; seenQ.add(nq); return true}).slice(0,5)
     .map(x=>({q:x.q.slice(0,240),opts:x.opts.map(o=>o.slice(0,140)),ans:x.ans}));
 }
 const quizText=z=>z.qs.map((x,i)=>`${i+1}. ${x.q}\n${x.opts.map((o,j)=>`   ${QZ_LET[j]}) ${o}`).join("\n")}\n   ${t("Answer")}: ${QZ_LET[x.ans]}`).join("\n\n");
