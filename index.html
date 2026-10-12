@@ -1688,6 +1688,24 @@ body.dlg-open{overflow:hidden}
   .mm{right:0;min-width:180px}
 }
 @media (max-width:640px){.oc .seg button{padding:7px 6px;white-space:nowrap;font-size:var(--fs-xs)}}
+/* v30b task dialog stays put on phones: no slide, no page scroll behind it, fixed-height day panel, 16px fields (no iOS zoom) */
+body.dlg-open .wrap{overflow:hidden!important;overscroll-behavior:none}
+#taskDlg{overscroll-behavior:none;touch-action:none}
+#taskDlg .dlg-body{touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.dlg .pl-s{min-height:var(--day-panel,150px)}
+.dlg .pl-s>.impact{flex:1}
+@media (max-width:640px){
+  #taskDlg{height:100vh;height:100dvh}
+  #taskDlg .dlg{top:0;bottom:0;height:100%;animation:none;padding-top:env(safe-area-inset-top,0px)}
+  #taskDlg .dlg-bg{animation:none}
+  .dlg-head{flex:none}
+  .dlg .inp,.dlg select,.dlg textarea,.dlg input{font-size:16px}
+}
+.dlg{--day-panel:226px}
+.dlg .pl-s>.impact:not(.simple)>.meter:last-child{margin-top:auto}
+@media (max-width:640px){.dlg{--day-panel:246px}}
+.dlg .impact:not(.simple) .sugs.big{grid-template-columns:repeat(3,minmax(0,1fr))}
+.dlg .impact:not(.simple) .sugs.big .sug{flex-direction:column;align-items:flex-start;justify-content:center;min-height:52px;padding:8px 10px}
 
 </style>
 </head>
@@ -2883,7 +2901,7 @@ function renderBoard(){
       if(pick)html+=lawBlock?`<span class="plus law">${t("No more tests")}</span>`:steerB&&!lesB.length?`<span class="plus none">${t("No {subject}",{subject:esc(subj(S.draft.subject))})}</span>`:`<span class="plus">${S.editId?t("Move here"):t("+ Plan here")}${lesB.length?" · "+periodWord(lesB[0]):""}</span>`;
       cell.innerHTML=html;
       if(pick){
-        const go=()=>{S.draft.date=k;S.tab="plan";S.armed=null;S.formOpen=true;S.formErr=null;render()};
+        const go=()=>{S.draft.date=k;S.tab="plan";S.armed=null;S.formOpen=true;S.formErr=null;keepScroll(render)};
         cell.addEventListener("click",e=>{if(e.target.closest(".rm,.task.editable,a"))return;go()});
         cell.onkeydown=e=>{if(e.target!==cell)return;if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}};
         cell.addEventListener("dragover",e=>{if(!S.dragId)return;e.preventDefault();cell.classList.add("drop")});
@@ -3420,7 +3438,7 @@ function startEdit(id){
   const x=S.tasks.find(y=>y.id===id); if(!x)return;
   S.editId=id; S.armed=null; S.tab="plan";
   S.draft={subject:x.subject,type:x.type,note:x.note,date:x.date<TODAY_K?null:x.date,link:x.link,repeat:0,priority:x.priority||"normal",est:x.est?String(x.est):"",details:x.details||""};
-  S.formOpen=true; S.formErr=null; render();
+  S.formOpen=true; S.formErr=null; keepScroll(render);
 }
 function cancelEdit(){if(!S.editId)return;S.editId=null;S.draft={...S.draft,date:null,note:"",link:"",repeat:0,priority:"normal",est:"",details:""}}
 // the default estimate of how long a task takes a student, in minutes
@@ -3431,8 +3449,10 @@ function draftError(){const D=S.draft;if(!D.date)return t("Pick a day for the ta
   if(D.est!==""&&D.est!=null){const n=Number(D.est);if(!Number.isInteger(n)||n<5||n>600)return t("Estimated time must be between 5 and 600 minutes.")}
   if(D.link&&!safeLink(D.link))return t("The materials link must start with https://");return null}
 const extraFields=D=>({priority:["low","high"].includes(D.priority)?D.priority:"normal",est:D.est!==""&&D.est!=null?Number(D.est):null,details:(D.details||"").trim().slice(0,500)});
-function openTaskForm(date){if(!isStaff())return;cancelEdit();S.tab="plan";S.draft={...S.draft,date:date||null};S.formOpen=true;S.formErr=null;render()}
-function closeTaskForm(){cancelEdit();S.formOpen=false;S.formErr=null;S.draft.date=null;render()}
+// the page behind the task dialog stays exactly where it was while the dialog is open and after it closes
+const keepScroll=fn=>{const w=document.querySelector(".wrap"),y=w?w.scrollTop:0,wy=scrollY;fn();if(w)w.scrollTop=y;if(scrollY!==wy)scrollTo(0,wy)};
+function openTaskForm(date){if(!isStaff())return;keepScroll(()=>{cancelEdit();S.tab="plan";S.draft={...S.draft,date:date||null};S.formOpen=true;S.formErr=null;render()})}
+function closeTaskForm(){keepScroll(()=>{cancelEdit();S.formOpen=false;S.formErr=null;S.draft.date=null;render()})}
 async function saveEdit(){
   const D=S.draft,id=S.editId; if(!id||S.busy)return;
   const err=draftError(); if(err){S.formErr=err;return renderPanel()}
@@ -3440,7 +3460,7 @@ async function saveEdit(){
   S.busy=true;renderPanel();
   try{await updateDoc(doc(db,"tasks",id),{date:D.date,subject:D.subject,type:D.type,note:D.note.trim().slice(0,60),link:safeLink(D.link),...extraFields(D),period:lessonsOn(activeCls(),D.date,D.subject)[0]||null,updatedAt:Date.now()});cancelEdit();S.formOpen=false;S.formErr=null;toast(t("Task updated"))}
   catch(e){toast(failMsg(e))}
-  S.busy=false;render();
+  S.busy=false;keepScroll(render);
 }
 async function moveTask(id,k){
   const x=S.tasks.find(y=>y.id===id); if(!x||x.date===k)return;
@@ -3470,7 +3490,7 @@ async function addTask(){
     } else {await addDoc(collection(db,"tasks"),{...base,date:D.date,period:lessonsOn(c,D.date,D.subject)[0]||null}); toast(t("{what} added for {cls}",{what:label,cls:c}))}
     S.draft={...D,date:null,note:"",link:"",repeat:0,priority:"normal",est:"",details:""}; S.formOpen=false; S.formErr=null;
   }catch(e){toast(failMsg(e))}
-  S.busy=false;render();
+  S.busy=false;keepScroll(render);
 }
 async function addClass(name){
   name=(name||"").trim().toUpperCase().replace(/[^0-9A-ZА-Я]/g,"").slice(0,8); if(!name)return toast(t("Type a class name, like 11A"));
