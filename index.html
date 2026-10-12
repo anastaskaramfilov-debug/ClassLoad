@@ -1384,6 +1384,19 @@ select.inp{appearance:none;-webkit-appearance:none;padding-right:40px;background
 .bar-desk .me-desk .me-av{width:28px;height:28px}
 .bar-desk .who .role{height:26px;display:inline-flex;align-items:center;padding:0 10px;font-size:var(--fs-xs);border-radius:var(--r-pill)}
 .bar-desk .chip-btn *{color:inherit!important;font-weight:600}
+/* v28d phone: a lower bottom bar, and the add button stays in place while scrolling */
+@media (max-width:980px){
+  .sidenav{padding:0 0 max(2px,calc(env(safe-area-inset-bottom,0px) - 16px))!important}
+  .nav-mob button{padding:5px 0 3px!important;gap:1px!important;font-size:10px!important}
+  .nav-mob button svg{width:21px!important;height:21px!important}
+  .nav-mob button[aria-current="page"]{background:transparent!important}
+  .nav-mob button[aria-current="page"]::before{content:"";position:absolute;top:0;left:30%;right:30%;height:2px;border-radius:0 0 2px 2px;background:var(--accent)}
+  .save-bar,.pl-grid .save-bar{position:static!important;bottom:auto!important;margin:4px 0 0!important;padding:0!important;border-top:0!important;background:none!important;box-shadow:none!important}
+}
+@media (max-width:640px){
+  .ai-fab{bottom:calc(58px + max(2px,calc(env(safe-area-inset-bottom,0px) - 16px)))!important}
+  .wrap{padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+}
 
 </style>
 </head>
