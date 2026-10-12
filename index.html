@@ -1370,6 +1370,20 @@ select.inp{appearance:none;-webkit-appearance:none;padding-right:40px;background
   .frow{grid-template-columns:1fr}
 }
 @media (max-width:640px){.board-head .nav button{white-space:nowrap;padding:0 9px;font-size:var(--fs-xs)}.board-head .cal-view button{padding:7px 11px;font-size:var(--fs-xs)}.board-head{grid-template-columns:auto minmax(0,1fr)}}
+/* v28c top bar: every control the same 36px pill, one gap, no divider */
+.bar-desk{display:inline-flex;align-items:center;gap:8px}
+.bar-desk .who{display:inline-flex;align-items:center;gap:8px;padding-left:0;border-left:0}
+.bar-desk .chip-btn,.bar-desk .install-btn,.bar-desk .me-desk,.bar-desk .who #pageBtn{
+  height:36px!important;min-height:36px;box-sizing:border-box;display:inline-flex;align-items:center;gap:6px;
+  border:1px solid var(--line)!important;border-radius:var(--r-pill)!important;background:var(--surface)!important;
+  color:var(--ink-strong)!important;font:inherit;font-size:var(--fs-sm)!important;font-weight:600;line-height:1;
+  padding:0 14px!important;box-shadow:0 1px 2px rgb(15 23 42 / .05);cursor:pointer;white-space:nowrap}
+.bar-desk .chip-btn:hover,.bar-desk .me-desk:hover,.bar-desk .who #pageBtn:hover{background:var(--surface-2)!important}
+.bar-desk .chip-btn .th-ic{width:15px;height:15px}
+.bar-desk .me-desk{padding:0 12px 0 4px!important}
+.bar-desk .me-desk .me-av{width:28px;height:28px}
+.bar-desk .who .role{height:26px;display:inline-flex;align-items:center;padding:0 10px;font-size:var(--fs-xs);border-radius:var(--r-pill)}
+.bar-desk .chip-btn *{color:inherit!important;font-weight:600}
 
 </style>
 </head>
