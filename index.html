@@ -3579,7 +3579,7 @@ function howVideo(app){
   const v=app.querySelector("#howVid"); if(!v)return;
   {const im=new Image();im.onerror=()=>v.setAttribute("poster","classload-ad.jpg");im.src="classload-ad-v3.jpg"}
   // pick the first video the site really has (a missing file comes back as the web page, not a video)
-  const cands=["classload-ad-v3.mp4","classload-ad.mp4","classload-ad.webm"]; let ci=0;
+  const cands=["classload-ad-v3.mp4","ClassLoad-ad-v3.mp4","classload-ad.mp4","classload-ad.webm"]; let ci=0;
   const useNext=()=>{if(ci>=cands.length)return;v.src=cands[ci++];try{v.load()}catch(e){}};
   v.addEventListener("error",()=>{useNext();if(user!==false&&v.dataset.vis)go()});
   const pick=async()=>{for(;ci<cands.length;ci++){let r=null;try{r=await fetch(cands[ci],{method:"HEAD",cache:"no-store"})}catch(e){break}
