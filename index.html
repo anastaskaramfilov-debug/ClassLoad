@@ -2397,6 +2397,63 @@ body.landing-on .wrap{max-width:none}
 .dev-lap,.dev-tab,.dev-ph{animation:none}
 .dev-scr{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 @media (max-width:900px){.h2-devs,.h2-devs.tilt{transform:none}}
+/* v40 phone landing: a swipeable row of big screens */
+.dev-cap,.dev-dots{display:none}
+@media (max-width:900px){
+  body.landing-on{padding:0 8px}
+  .lp-hero2{padding:16px 16px 22px;border-radius:22px}
+  .h2-top{margin-top:30px}
+  .h2-top h1{font-size:clamp(1.85rem,8.4vw,2.6rem);line-height:1.02}
+  .h2-side p{font-size:15px}
+  .h2-word{display:none}
+  .h2-stage{margin:18px -16px 0;padding:0}
+  .h2-devs{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 16px 6px;scroll-padding:0 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch;align-items:flex-end;margin:0}
+  .h2-devs::-webkit-scrollbar{display:none}
+  .dev{flex:0 0 auto;scroll-snap-align:center;margin:0}
+  .dev-lap{order:0;width:88%}
+  .dev-tab{order:1;width:84%;align-self:flex-end}
+  .dev-ph{order:2;width:62%;justify-self:auto}
+  .dev-lap .dev-in{width:620px;height:560px}
+  .dev-lap .dev-scr{aspect-ratio:620/560;border-width:8px 8px 10px;border-radius:14px 14px 4px 4px}
+  .dev-lap .dl-nav,.dev-lap .dl-q{display:none}
+  .dev-lap .dl-main{padding:12px}
+  .dev-lap .dl-days{gap:6px}.dev-lap .dl-day{padding:8px 6px}
+  .dev-lap .dl-types{flex-wrap:wrap}
+  .dev-lap .dl-add{font-size:0;padding:9px}.dev-lap .dl-add::before{content:"+";font-size:18px;line-height:1}
+  .dev-base{margin:0 -5%;height:12px}
+  .dev-tab .dev-in{width:520px;height:470px}
+  .dev-tab .dev-scr{aspect-ratio:520/470;border-width:9px;border-radius:18px}
+  .dev-tab .dt-plot{margin:14px 14px 0;gap:5px}
+  .dev-ph .dev-scr{border-width:6px;border-radius:28px}
+  .dev-cap{display:block;margin:10px 0 0;text-align:center;font-size:13px;font-weight:600;color:#2B3540}
+  :root[data-theme="dark"] .dev-cap{color:#E6ECF0}
+  .dev-dots{display:flex;justify-content:center;gap:6px;margin:12px 16px 0}
+  .dev-dots button{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.18);color:#1E2733;font:inherit;font-size:13px;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer}
+  :root[data-theme="dark"] .dev-dots button{color:#fff}
+  .dev-dots button[aria-pressed="true"]{background:#1E2733;border-color:#1E2733;color:#fff}
+  .h2-hint{padding:12px 6px 0}
+  body.landing-on .h2-card{width:calc(100% - 12px);margin-top:16px}
+}
+@media (max-width:900px) and (prefers-color-scheme: dark){:root:not([data-theme="light"]) .dev-cap{color:#E6ECF0}:root:not([data-theme="light"]) .dev-dots button{color:#fff}}
+@media (max-width:900px){
+  .h2-stage{height:auto}
+  .lp{gap:56px}
+  .dev-lap .dev-in{width:520px;height:400px}
+  .dev-lap .dev-scr{aspect-ratio:520/400}
+  .dev-lap .dl-hero{padding:12px 14px;gap:4px 14px}.dev-lap .dl-cls{font-size:32px}.dev-lap .dl-lead{font-size:18px}
+  .dev-lap .dl-types button{padding:5px 10px;font-size:12.5px}
+  .dev-lap .dl-dh{font-size:11px}.dev-lap .dl-dh b{font-size:14px}
+  .dev-lap .dl-chip b{font-size:12px}.dev-lap .dl-chip small{font-size:10.5px}
+  .dev-lap .dl-msg{font-size:12.5px;padding:7px 10px}
+  .dev-tab .dev-in{width:480px;height:420px}
+  .dev-tab .dev-scr{aspect-ratio:480/420}
+}
+@media (max-width:900px){
+  .h2-devs{align-items:center}
+  .dev-ph{width:54%}
+  .dev-ph .dev-in{height:540px}
+  .dev-ph .dev-scr{aspect-ratio:300/540}
+}
 
 </style>
 </head>
@@ -3103,10 +3160,11 @@ function renderLanding(app){
       <div class="h2-stage">
         <div class="h2-word" aria-hidden="true">CLASSLOAD</div>
         <div class="h2-devs" id="h2Devs">
-          <div class="dev dev-tab"><div class="dev-scr" data-w="640" data-h="460"><div class="dev-in" id="devTab"></div></div></div>
-          <div class="dev dev-lap"><div class="dev-scr" data-w="1000" data-h="625"><div class="dev-in" id="devLap"></div></div><div class="dev-base"></div></div>
-          <div class="dev dev-ph"><div class="dev-scr" data-w="300" data-h="620"><div class="dev-in" id="devPh"></div></div></div>
+          <div class="dev dev-tab"><div class="dev-scr" data-w="640" data-h="460"><div class="dev-in" id="devTab"></div></div><p class="dev-cap">${t("Parent")} · ${t("8-week forecast")}</p></div>
+          <div class="dev dev-lap"><div class="dev-scr" data-w="1000" data-h="625"><div class="dev-in" id="devLap"></div></div><div class="dev-base"></div><p class="dev-cap">${t("Teacher")} · ${t("Plan")}</p></div>
+          <div class="dev dev-ph"><div class="dev-scr" data-w="300" data-h="620"><div class="dev-in" id="devPh"></div></div><p class="dev-cap">${t("Student")} · ${t("Upcoming")}</p></div>
         </div>
+        <div class="dev-dots" role="group" aria-label="${t("View")}"><button type="button" data-devgo="0" aria-pressed="true">${t("Teacher")}</button><button type="button" data-devgo="1" aria-pressed="false">${t("Parent")}</button><button type="button" data-devgo="2" aria-pressed="false">${t("Student")}</button></div>
         <div class="h2-floor" aria-hidden="true"></div>
       </div>
       <p class="h2-hint">${t("The screens are live. Add a test on the laptop and watch the tablet and the phone change.")}</p>
@@ -3265,7 +3323,7 @@ function lpDevices(){
 }
 // "zoom" lays the screen out again at its real size, so text stays sharp; scale() is only the fallback
 const DEV_ZOOM=(()=>{try{return !!(window.CSS&&CSS.supports&&CSS.supports("zoom","0.5"))}catch(e){return false}})();
-function devFit(){document.querySelectorAll(".dev-scr").forEach(s=>{const k=s.clientWidth/(+s.dataset.w||1),i=s.firstElementChild;if(!i||!k)return;
+function devFit(){document.querySelectorAll(".dev-scr").forEach(s=>{const i=s.firstElementChild;if(!i)return;let w=+s.dataset.w||1;try{w=parseFloat(getComputedStyle(i).width)||w}catch(e){}const k=s.clientWidth/w;if(!k)return;
   if(DEV_ZOOM){i.style.zoom=k.toFixed(4);i.style.transform=""}else i.style.transform=`scale(${k})`})}
 function devWire(app){
   const box=app.querySelector("#h2Devs"); if(!box)return;
@@ -3278,6 +3336,10 @@ function devWire(app){
     else if(b.dataset.dvwk){D.wk=+b.dataset.dvwk;lpDevices()}
     else if(b.dataset.dvdone){const id=b.dataset.dvdone;D.done[id]=!D.done[id];if(D.done[id])D.pop=id;lpDevices()}
     const f=b.dataset.dvadd?box.querySelector(`[data-dvadd="${b.dataset.dvadd}"]`):b.dataset.dvdone?box.querySelector(`[data-dvdone="${b.dataset.dvdone}"]`):b.dataset.dvwk?box.querySelector(`[data-dvwk="${b.dataset.dvwk}"]`):null; if(f)f.focus({preventScroll:true})});
+  const devEls=()=>[box.querySelector(".dev-lap"),box.querySelector(".dev-tab"),box.querySelector(".dev-ph")];
+  app.querySelectorAll("[data-devgo]").forEach(b=>b.onclick=()=>{const el=devEls()[+b.dataset.devgo];if(el)box.scrollTo({left:el.offsetLeft-(box.clientWidth-el.offsetWidth)/2,behavior:"smooth"})});
+  box.addEventListener("scroll",()=>{const mid=box.scrollLeft+box.clientWidth/2;let best=0,bd=1e9;devEls().forEach((el,i)=>{if(!el)return;const d=Math.abs(el.offsetLeft+el.offsetWidth/2-mid);if(d<bd){bd=d;best=i}});
+    app.querySelectorAll("[data-devgo]").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.devgo===best)))},{passive:true});
   if(window.ResizeObserver){const ro=new ResizeObserver(devFit);box.querySelectorAll(".dev-scr").forEach(s=>ro.observe(s))} else window.addEventListener("resize",devFit);
   let reduce=false; try{reduce=matchMedia("(prefers-reduced-motion: reduce)").matches||!matchMedia("(hover:hover)").matches}catch(e){}
   const stage=app.querySelector(".h2-stage");
