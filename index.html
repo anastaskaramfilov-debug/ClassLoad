@@ -2674,6 +2674,26 @@ body.oc-on .oc-kpis .kpi{flex:none}
 
 .how-n{background:linear-gradient(135deg,#6D5DFC,#14C2E0);color:#fff;border:0}
 
+/* v40: decision-ready workspaces. Existing workflows stay intact; this layer makes
+   progress, follow-up and workload capacity readable at a glance. */
+.companion{display:grid;grid-template-columns:1.35fr repeat(2,minmax(0,1fr));gap:10px;margin:2px 0 16px}
+.companion-card{min-width:0;padding:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,var(--surface),var(--surface-2))}
+.companion-card.lead{background:linear-gradient(135deg,#172033,#33435b);border-color:transparent;color:#fff}
+.companion-card .eyebrow,.assignment-pulse .eyebrow{display:block;margin-bottom:5px;font-size:10px;letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.companion-card.lead .eyebrow{color:rgba(255,255,255,.64)}
+.companion-card b{display:block;font-family:"Inter Tight","Inter",var(--font);font-size:18px;line-height:1.15;letter-spacing:-.01em}
+.companion-card.lead b{font-size:20px;color:#fff}.companion-card p{margin:4px 0 0;font-size:12px;color:var(--muted)}.companion-card.lead p{color:rgba(255,255,255,.76)}
+.companion-card button{margin-top:10px;width:auto;min-height:32px;padding:6px 10px;font-size:12px}
+.companion-progress{margin:10px 0 2px}.companion-progress .meter{height:7px;border-radius:99px;background:rgba(255,255,255,.2);overflow:hidden}.companion-progress .meter b{display:block;height:100%;border-radius:inherit;background:#77E5AC}
+.capacity-note{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:18px;padding:11px 12px;border:1px solid rgba(255,255,255,.22);background:rgba(7,16,29,.16);border-radius:14px;color:#fff}
+.capacity-note span{font-size:12px;color:rgba(255,255,255,.76)}.capacity-note b{font-size:13px}.capacity-note .sbtn{flex:none;background:#fff;color:#172033;border-color:#fff}
+.assignment-pulse{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;margin:12px 0 16px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--surface-2)}
+.assignment-pulse .pulse-num{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--accent-soft);color:var(--accent);font:700 18px/1 "Inter Tight","Inter",var(--font)}
+.assignment-pulse b{display:block;font-size:14px}.assignment-pulse p{margin:2px 0 0;font-size:12px;color:var(--muted)}.assignment-pulse .meter{height:7px;width:120px;border-radius:99px;overflow:hidden;background:var(--line)}.assignment-pulse .meter b{height:100%;border-radius:inherit;background:var(--ok-bar)}
+.dt.work tbody tr{transition:transform .16s ease,box-shadow .16s ease}.dt.work tbody tr:hover{box-shadow:0 8px 18px -16px rgba(15,23,42,.45)}
+@media (max-width:640px){.companion{grid-template-columns:1fr 1fr}.companion-card.lead{grid-column:1/-1}.companion-card{padding:12px}.capacity-note{align-items:flex-start;flex-direction:column}.capacity-note .sbtn{width:100%}.assignment-pulse{grid-template-columns:auto 1fr}.assignment-pulse .meter{grid-column:1/-1;width:100%}}
+@media (prefers-reduced-motion:reduce){.dt.work tbody tr{transition:none}}
+
 </style>
 </head>
 <body>
@@ -6050,6 +6070,52 @@ function ihbOne(b){
 let ihbQ=0;
 function ihbAll(){ihbQ=0;document.querySelectorAll(IHB_SEL).forEach(b=>{if(b.tagName==="BUTTON"||b.tagName==="A")ihbOne(b)})}
 try{ihbAll();new MutationObserver(()=>{if(!ihbQ)ihbQ=(window.requestAnimationFrame||setTimeout)(ihbAll)}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+
+// v40 workspace enhancements. Wrap the mature renderers instead of duplicating any
+// data mutation or permissions logic, so live Firestore updates keep their behaviour.
+Object.assign(BG,{"Your study plan":"Вашият план за учене","complete":"готови","Everything is checked off. Well done.":"Всичко е отметнато. Браво!","A clear plan for what is next.":"Ясен план за следващото.","Next focus":"Следващ фокус","Open study plan":"Отвори плана","Plan ahead":"Планирай напред","estimated study time":"прогнозно време за учене","See this week":"Виж тази седмица","Planning capacity":"Капацитет за планиране","Lightest upcoming day":"Най-лек следващ ден","Plan here":"Планирай тук","Class progress":"Напредък на класа","of":"от","submitted or graded":"предадени или оценени","students still need a nudge":"ученици още имат нужда от напомняне","Everyone has checked in.":"Всички са отбелязали статус."});
+const readerRenderV40=renderReader;
+renderReader=function(p){
+  readerRenderV40(p);
+  if(!(CUR&&CUR.role==="student")||S.preview)return;
+  const upcoming=clsTasks().filter(x=>x.date>=TODAY_K).sort((a,b)=>a.date.localeCompare(b.date));
+  if(!upcoming.length)return;
+  const done=upcoming.filter(doneForMe).length, total=upcoming.length;
+  const next=upcoming.find(x=>!doneForMe(x))||upcoming[0];
+  const mins=upcoming.filter(x=>!doneForMe(x)).reduce((n,x)=>n+estOf(x),0);
+  const day=Math.max(0,Math.round((parse(next.date)-TODAY)/864e5));
+  const when=day===0?t("Today"):day===1?t("Tomorrow"):t("in {n} days",{n:day});
+  const card=document.createElement("section");card.className="companion";card.setAttribute("aria-label",t("Your study plan"));
+  card.innerHTML=`<div class="companion-card lead"><span class="eyebrow">${t("This week")}</span><b>${done} / ${total} ${t("complete")}</b><div class="companion-progress"><div class="meter"><b style="width:${Math.round(done/total*100)}%"></b></div></div><p>${done===total?t("Everything is checked off. Well done."):t("A clear plan for what is next.")}</p></div><div class="companion-card"><span class="eyebrow">${t("Next focus")}</span><b>${esc(subj(next.subject))}</b><p>${when} · ${typeName(next.type)}</p><button class="sbtn" data-v40-study="${esc(next.id)}">${t("Open study plan")}</button></div><div class="companion-card"><span class="eyebrow">${t("Plan ahead")}</span><b>${fmtMin(mins)}</b><p>${t("estimated study time")}</p><button class="sbtn" data-v40-week>${t("See this week")}</button></div>`;
+  const before=p.querySelector(".flt,.flt-quick,.progress,.next,.empty"); if(before)before.before(card);else p.prepend(card);
+  const study=card.querySelector("[data-v40-study]");if(study)study.onclick=()=>{S.studyOpen[study.dataset.v40Study]=true;renderPanel();const el=p.querySelector(`[data-open="${CSS.escape(study.dataset.v40Study)}"]`);if(el)el.scrollIntoView({behavior:"smooth",block:"center"})};
+  const week=card.querySelector("[data-v40-week]");if(week)week.onclick=()=>{S.flt={...S.flt,when:"week"};renderPanel()};
+};
+
+const heroRenderV40=renderHero;
+renderHero=function(){
+  heroRenderV40();
+  if(!isStaff()||!canAddIn(activeCls()))return;
+  const hero=document.getElementById("hero");if(!hero||hero.querySelector(".capacity-note"))return;
+  let best=null;
+  for(let i=0;i<15;i++){const d=addDays(TODAY,i);if(d.getDay()%6===0)continue;const score=tasksOn(key(d)).reduce((n,x)=>n+TYPES[x.type].w,0);if(!best||score<best.score)best={d,score};}
+  if(!best)return;
+  const note=document.createElement("div");note.className="capacity-note";
+  note.innerHTML=`<div><span>${t("Planning capacity")}</span><b>${t("Lightest upcoming day")}: ${dname(best.d)} ${fmt(best.d)} · ${best.score} ${t("pts")}</b></div><button class="sbtn" data-v40-plan>${t("Plan here")}</button>`;
+  hero.querySelector(".hero-left").append(note);
+  note.querySelector("[data-v40-plan]").onclick=()=>{S.tab="plan";S.draft.date=key(best.d);S.formOpen=true;render()};
+};
+
+const workRenderV40=renderWork;
+renderWork=function(p,tabs){
+  workRenderV40(p,tabs);
+  const rows=Object.values(S.workRows||{}),total=Object.keys(S.members).filter(u=>S.members[u].role==="student"&&S.members[u].school===CUR.school&&S.members[u].cls===activeCls()).length;
+  const completed=rows.filter(x=>x.status==="submitted"||x.status==="graded").length;
+  const sum=p.querySelector(".ws-sum");if(!sum||!total)return;
+  const percent=Math.round(completed/total*100), pending=Math.max(0,total-completed);
+  const pulse=document.createElement("section");pulse.className="assignment-pulse";pulse.innerHTML=`<div class="pulse-num">${percent}%</div><div><span class="eyebrow">${t("Class progress")}</span><b>${completed} ${t("of")} ${total} ${t("submitted or graded")}</b><p>${pending?`${pending} ${t("students still need a nudge")}`:t("Everyone has checked in.")}</p></div><div class="meter" aria-label="${percent}%"><b style="width:${percent}%"></b></div>`;
+  sum.after(pulse);
+};
 
 </script>
 </body>
