@@ -2390,6 +2390,13 @@ body.landing-on .wrap{max-width:none}
 }
 @media (min-width:901px){.dev-tab{left:0;width:24.5%;bottom:8%}.dev-lap{left:26%;width:52%}.dev-ph{right:4%;width:12.5%}}
 @media (min-width:901px){.dev-tab{transform:rotate(-4deg)}.dev-ph{transform:rotate(5deg)}.h2-devs{transform-style:flat}}
+/* v39b sharp screens: no resting tilt or rotation, tilt only while the mouse is over the devices */
+.h2-devs{transform:translateX(-50%)}
+.h2-devs.tilt{transform:translateX(-50%) perspective(1600px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}
+@media (min-width:901px){.dev-tab,.dev-ph{transform:none}}
+.dev-lap,.dev-tab,.dev-ph{animation:none}
+.dev-scr{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+@media (max-width:900px){.h2-devs,.h2-devs.tilt{transform:none}}
 
 </style>
 </head>
@@ -3256,7 +3263,10 @@ function lpDevices(){
     <p>${t("Status")}: <strong class="${lv}">${devLvName(lv)}</strong></p></div>`;
   devFit();
 }
-function devFit(){document.querySelectorAll(".dev-scr").forEach(s=>{const k=s.clientWidth/(+s.dataset.w||1),i=s.firstElementChild;if(i&&k)i.style.transform=`scale(${k})`})}
+// "zoom" lays the screen out again at its real size, so text stays sharp; scale() is only the fallback
+const DEV_ZOOM=(()=>{try{return !!(window.CSS&&CSS.supports&&CSS.supports("zoom","0.5"))}catch(e){return false}})();
+function devFit(){document.querySelectorAll(".dev-scr").forEach(s=>{const k=s.clientWidth/(+s.dataset.w||1),i=s.firstElementChild;if(!i||!k)return;
+  if(DEV_ZOOM){i.style.zoom=k.toFixed(4);i.style.transform=""}else i.style.transform=`scale(${k})`})}
 function devWire(app){
   const box=app.querySelector("#h2Devs"); if(!box)return;
   const again=()=>renderDemo(document.getElementById("lpDemo"));
@@ -3273,7 +3283,8 @@ function devWire(app){
   const stage=app.querySelector(".h2-stage");
   if(stage&&!reduce){stage.addEventListener("pointermove",e=>{const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
       box.style.setProperty("--ry",(x*8).toFixed(2)+"deg");box.style.setProperty("--rx",(-y*5).toFixed(2)+"deg")});
-    stage.addEventListener("pointerleave",()=>{box.style.setProperty("--ry","0deg");box.style.setProperty("--rx","0deg")})}
+    stage.addEventListener("pointerleave",()=>{box.style.removeProperty("--ry");box.style.removeProperty("--rx");box.classList.remove("tilt")});
+    stage.addEventListener("pointerenter",()=>box.classList.add("tilt"))}
   devFit();
 }
 // sections fade in as they scroll into view (everything stays visible without this)
