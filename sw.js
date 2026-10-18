@@ -32,7 +32,7 @@ self.addEventListener("notificationclick", event => {
 });
 
 // Offline: always try the network first so updates show immediately; fall back to the last copy.
-const CACHE = "classload-v64";
+const CACHE = "classload-v65";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "logo-mark.png", "logo-full.png", "favicon-64.png", "favicon-96.png", "favicon.ico"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(() => {})); self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
