@@ -1788,6 +1788,28 @@ body.dlg-open .wrap{overflow:hidden!important;overscroll-behavior:none}
   .auth-form{padding:12px 0 24px;align-items:flex-start}
   .auth-in{gap:16px}
 }
+/* v32 interactive hover buttons */
+.ihb{position:relative;overflow:hidden;isolation:isolate;border-radius:999px!important;--ihb-fill:var(--accent);--ihb-ink:var(--accent-ink)}
+.ihb:not(.btn):not(.auth-btn):not(.yes):not(.danger){background:var(--surface)}
+.btn.ihb,.auth-btn.ihb,.sbtn.yes.ihb{--ihb-fill:var(--surface);--ihb-ink:var(--accent)}
+.sbtn.danger.ihb{--ihb-fill:var(--surface);--ihb-ink:var(--bad)}
+.danger-ghost.ihb{--ihb-fill:var(--bad-bar);--ihb-ink:#fff}
+.ihb .ihb-dot{display:inline-block;flex:none;width:8px;height:8px;border-radius:50%;background:var(--ihb-fill);margin-right:8px;vertical-align:middle;position:relative;z-index:0;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.auth-g.ihb .ihb-dot,.add-btn.ihb .ihb-dot{margin-right:-2px}
+.ihb .ihb-a{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:inherit;transition:transform .3s ease,opacity .3s ease}
+.ihb .ihb-b{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:8px;padding:inherit;color:var(--ihb-ink);opacity:0;transform:translateX(48px);transition:transform .3s ease,opacity .3s ease;pointer-events:none;white-space:nowrap}
+.ihb .ihb-b svg:not(.ihb-arr){stroke:currentColor}
+.ihb-arr{flex:none;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+@media (hover:hover){
+  .ihb:not(:disabled):hover .ihb-a{transform:translateX(48px);opacity:0}
+  .ihb:not(:disabled):hover .ihb-b{transform:translateX(-2px);opacity:1}
+  .ihb:not(:disabled):hover .ihb-dot{transform:scale(120)}
+}
+.ihb:not(:disabled):focus-visible .ihb-a{transform:translateX(48px);opacity:0}
+.ihb:not(:disabled):focus-visible .ihb-b{transform:translateX(-2px);opacity:1}
+.ihb:not(:disabled):focus-visible .ihb-dot{transform:scale(120)}
+.ihb:disabled .ihb-dot{opacity:.5}
+@media (prefers-reduced-motion:reduce){.ihb .ihb-a,.ihb .ihb-b,.ihb .ihb-dot{transition-duration:.01s}}
 
 </style>
 </head>
@@ -4713,6 +4735,24 @@ onAuthStateChanged(auth,u=>{
   render();
 });
 render();
+
+// ================= interactive hover buttons =================
+// Every action button gets the same hover: the label slides away, the dot grows to fill the button and the label returns with an arrow.
+const IHB_SEL=".btn,.sbtn,.auth-btn,.auth-g,.add-btn";
+const IHB_SKIP=".seg,.types,.oc-tabs,.oc-subtabs,.nav-mob,.mm,.more-menu summary";
+const IHB_ARROW='<svg class="ihb-arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+function ihbOne(b){
+  if(b.firstElementChild&&b.firstElementChild.classList.contains("ihb-dot"))return;
+  if(b.closest(IHB_SKIP)||!b.textContent.trim())return;
+  const a=document.createElement("span"); a.className="ihb-a"; while(b.firstChild)a.appendChild(b.firstChild);
+  const c=document.createElement("span"); c.className="ihb-b"; c.setAttribute("aria-hidden","true"); c.innerHTML=a.innerHTML+IHB_ARROW;
+  c.querySelectorAll("[id]").forEach(e=>e.removeAttribute("id"));
+  const d=document.createElement("span"); d.className="ihb-dot"; d.setAttribute("aria-hidden","true");
+  b.append(d,a,c); b.classList.add("ihb");
+}
+let ihbQ=0;
+function ihbAll(){ihbQ=0;document.querySelectorAll(IHB_SEL).forEach(b=>{if(b.tagName==="BUTTON"||b.tagName==="A")ihbOne(b)})}
+try{ihbAll();new MutationObserver(()=>{if(!ihbQ)ihbQ=(window.requestAnimationFrame||setTimeout)(ihbAll)}).observe(document.body,{childList:true,subtree:true})}catch(e){}
 
 </script>
 </body>
