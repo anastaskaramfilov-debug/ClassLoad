@@ -14,7 +14,8 @@
 <meta property="og:image" content="https://classload.pages.dev/icon-512.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"ClassLoad","alternateName":["ClassLoad – school workload calendar","Class Load"],"url":"https://classload.pages.dev/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ClassLoad","url":"https://classload.pages.dev/","applicationCategory":"EducationalApplication","operatingSystem":"Any","inLanguage":["bg","en"],"description":"A free school workload calendar: every class's tests and homework in one place, with warnings before a week gets overloaded.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
-<link rel="preload" href="golos-cyr.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)">
 <meta name="application-name" content="ClassLoad">
@@ -27,8 +28,6 @@
 <link rel="icon" type="image/png" sizes="96x96" href="favicon-96.png">
 <link rel="icon" type="image/svg+xml" href="logo-mark.svg">
 <style>
-@font-face{font-family:"Golos Text";font-style:normal;font-display:swap;font-weight:400 900;src:url(golos-cyr.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
-@font-face{font-family:"Golos Text";font-style:normal;font-display:swap;font-weight:400 900;src:url(golos-lat.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 /* ClassLoad: a calm, professional school tool.
    System font, neutral greys, thin borders, one blue accent. Green/amber/red appear only as small status signals. */
 :root{
@@ -2643,88 +2642,6 @@ body.oc-on .oc-kpis .kpi{flex:none}
 @media (max-width:640px){body.oc-on .oc-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .oc-cmd span{white-space:nowrap}
 @media (max-width:640px){.oc-acts{display:grid;grid-template-columns:1fr auto}.oc-cmd{justify-content:flex-start}}
-/* v43 calmer, hand-made look: one typeface, flat colour, no glow, no glass, no gradient text */
-:root{--font:"Golos Text",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;--f-head:var(--font);--f-display:var(--font);--f-body:var(--font)}
-body,button,input,select,textarea{font-family:var(--font)}
-h1,h2,h3,h4,.h2-top h1,.h2-card-copy h2,.oc-greet,.oc-big>b,.oc-spark>b,.oc-donut>div b,.kpi b,.verdict .lead,.class-select,.class-fixed,.week-head h3,.nb-when b,.dl-cls,.dl-lead,.dp-head b,body.oc-on .oc-card h2,body.oc-on .oc-school-h h2,body.oc-on .oc-kpis .kpi b{font-family:var(--font)!important}
-h1,h2,h3{text-wrap:balance}
-/* buttons: no resting dot; the fill still sweeps in on hover */
-.ihb .ihb-dot{opacity:0;margin-right:-8px}
-.ihb:not(:disabled):hover .ihb-dot,.ihb:not(:disabled):focus-visible .ihb-dot{opacity:1}
-.add-btn,.btn{box-shadow:none}
-/* ---------- landing ---------- */
-.lp-hero2{background:#4F46E5}
-:root[data-theme="dark"] .lp-hero2{background:#1E293B}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .lp-hero2{background:#1E293B}}
-.h2-top h1{text-transform:none;font-weight:700;letter-spacing:-.03em;line-height:1.02;font-size:clamp(2.3rem,1.5rem + 3.6vw,4.6rem);max-width:14ch}
-.h2-side p{color:#E0E7FF}
-.h2-hint,.dev-cap{color:#E0E7FF!important}
-.h2-floor{display:none}
-.dev-lap .dev-scr,.dev-tab .dev-scr,.dev-ph .dev-scr{box-shadow:0 18px 40px -18px rgba(15,23,42,.55)}
-.lp-eyebrow{display:none}
-.lp-sec h2,.lp-final h2{font-weight:700;letter-spacing:-.025em}
-.lp-n{background:#4F46E5;border-radius:10px}
-.lp-final{background:#0F172A;border-radius:24px}
-.lp-videosec .lp-media,.art-video{box-shadow:none}
-.lp-card,.lp-safe,.lp-steps li,.lp-mock,.h2-card{box-shadow:none}
-.h2-card{border:1px solid var(--line)}
-.lp-steps li:hover,.lp-lift:hover{transform:none}
-/* ---------- app ---------- */
-#hero.hero,#hero.hero[class]{background:#4F46E5!important;box-shadow:none!important}
-:root[data-theme="dark"] #hero.hero{background:#1E293B!important;border:1px solid #334155!important}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #hero.hero{background:#1E293B!important;border:1px solid #334155!important}}
-.next-big{backdrop-filter:none;background:rgba(255,255,255,.1)}
-.nb-what small{text-transform:none;letter-spacing:0;font-size:12px}
-.kpi,.panel,.week,.month,.card{box-shadow:none}
-.confetti{display:none}
-/* ---------- owner console: dark, but flat ---------- */
-body.oc-on{background:#0F172A;--bg:#0F172A;--surface:#1E293B;--surface-2:#273449;--line:#334155;--line-2:#475569;--hair:#2A3649;--muted:#94A3B8;--ink:#E2E8F0;--ink-strong:#F8FAFC}
-body.oc-on::before{display:none}
-body.oc-on .bar{background:#0F172A;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:#1E293B}
-.oc-kicker{font-family:var(--font);font-size:14px;letter-spacing:0;text-transform:none;color:#94A3B8;margin:0 0 4px}
-.oc-head h1.oc-greet{background:none;color:#F8FAFC;-webkit-text-fill-color:#F8FAFC;font-size:clamp(1.9rem,1.4rem + 1.6vw,2.6rem);letter-spacing:-.025em}
-.oc-clock b{font-family:var(--font);font-size:20px;font-weight:600;letter-spacing:0;color:#E2E8F0;text-shadow:none}
-.oc-status{border:0;background:none!important;padding:8px 4px;font-weight:500}
-.oc-status i{animation:none;box-shadow:none}
-.oc-status.ok{color:#94A3B8}.oc-status.ok i{background:#10B981}
-.oc-status.warn{color:#FBBF24}.oc-status.bad{color:#F87171}
-.oc-status[data-go]:hover{text-decoration:underline;text-underline-offset:3px}
-.oc-cmd{background:#1E293B;border-color:#334155}
-.oc-cmd:hover{box-shadow:none;border-color:#818CF8}
-.oc-cmd kbd,.oc-pal kbd{font-family:var(--font)}
-body.oc-on .add-btn,body.oc-on .btn:not(.ghost):not(.sbtn):not(.good){background:#818CF8;color:#0F172A;box-shadow:none}
-body.oc-on .add-btn:hover,body.oc-on .btn:not(.ghost):not(.sbtn):not(.good):hover{background:#A5B4FC}
-body.oc-on .oc-tabs{background:none;backdrop-filter:none;border:0;border-bottom:1px solid #334155;border-radius:0;padding:0;gap:2px}
-body.oc-on .oc-tabs button{border-radius:0;padding:12px 14px;border-bottom:2px solid transparent;margin-bottom:-1px}
-body.oc-on .oc-tabs button:hover{background:none}
-body.oc-on .oc-tabs button[aria-current="page"]{background:none;box-shadow:none;color:#F8FAFC;border-bottom-color:#818CF8}
-body.oc-on .oc-tabs button[aria-current="page"] .oc-n{background:#334155}
-body.oc-on .oc-n.hot{box-shadow:none}
-body.oc-on .card,body.oc-on .kpi,body.oc-on .oc-card,.oc-hero>div{background:#1E293B!important;border:1px solid #334155;box-shadow:none;backdrop-filter:none;border-radius:14px}
-body.oc-on .card-h h2::before{display:none}
-.oc-hero small{font-family:var(--font);font-size:14px;letter-spacing:0;text-transform:none;color:#94A3B8}
-.oc-big>b{text-shadow:none;font-size:clamp(3rem,2.2rem + 2.4vw,4.4rem);letter-spacing:-.035em}
-.oc-donut svg{filter:none}
-.oc-sbars i{background:#818CF8;opacity:1;animation:none;border-radius:3px 3px 0 0}
-.oc-sbars i.z{background:#334155}
-.oc-sbars i.now{box-shadow:none;background:#C7D2FE}
-.oc-roles li{background:#0F172A;border-color:#334155}
-body.oc-on .oc-kpis .kpi::before{display:none}
-body.oc-on .oc-kpis .kpi.bad{border-color:rgba(248,113,113,.5)}
-body.oc-on .oc-kpis .kpi:hover{transform:none;box-shadow:none;border-color:#475569}
-body.oc-on .oc-kpis .kpi b{font-size:28px}
-body.oc-on .oc-kpis .kpi.bad b{text-shadow:none}
-body.oc-on .oc-bar i,body.oc-on .au-dot{box-shadow:none}
-body.oc-on table th{font-family:var(--font);font-size:12.5px;letter-spacing:0;text-transform:none;color:#94A3B8}
-.oc-pal{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(15,23,42,.7)}
-.oc-pal-box{background:#1E293B;border-color:#475569;box-shadow:0 24px 60px -20px rgba(0,0,0,.7)}
-.oc-pal li[aria-selected="true"]{background:#273449}
-/* v43b names in normal case, plain nav */
-.logo,.logo-txt,.bar .logo span{text-transform:none!important;letter-spacing:-.01em!important;font-weight:700}
-.h2-logo{letter-spacing:-.01em;font-weight:700;font-size:17px}
-.h2-links a.on{background:none}
-.h2-links a.on::before{content:none}
-.h2-links a:hover{background:rgba(255,255,255,.12)}
 /* v44 how it works: the ad + the three steps */
 .lp-how2 .how-grid{width:100%;margin-top:36px;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:48px;align-items:center;text-align:left}
 .how-media .art-video{position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#0F172A;border:1px solid var(--line)}
@@ -2745,8 +2662,6 @@ body.oc-on table th{font-family:var(--font);font-size:12.5px;letter-spacing:0;te
   .how-media .art-video{border-radius:14px}
   .lp-how2 .lp-scale{padding-left:0;flex-wrap:wrap}
 }
-.lp-top{background:#4F46E5!important;box-shadow:0 6px 16px -6px rgba(15,23,42,.4)!important}
-.lp-progress i{background:#4F46E5!important}
 .lp-how2 .lp-pill{font-size:13px;padding:6px 12px}
 .how-media .how-vid{background:#E8EEF7;border-color:var(--line)}
 .how-vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:pointer;display:block}
@@ -2755,9 +2670,9 @@ body.oc-on table th{font-family:var(--font);font-size:12.5px;letter-spacing:0;te
 .how-vid.paused .how-play{opacity:1;pointer-events:auto}
 .how-play:hover{transform:scale(1.05)}
 .how-vid .art-snd{z-index:3}
-.lp-top{background:#4F46E5!important;box-shadow:0 6px 16px -6px rgba(15,23,42,.4)!important}
-.lp-progress i{background:#4F46E5!important}
 .lp-how2 .lp-pill{font-size:13px;padding:6px 12px}
+
+.how-n{background:linear-gradient(135deg,#6D5DFC,#14C2E0);color:#fff;border:0}
 
 </style>
 </head>
@@ -3451,9 +3366,10 @@ function renderLanding(app){
     [t("Who can see my school's data?"),t("Only people the school has approved. Each school's admin sees only their own school.")]];
   app.innerHTML=`<div class="lp">
     <section class="lp-hero2">
+      <div class="h2-cloud c1"></div><div class="h2-cloud c2"></div><div class="h2-cloud c3"></div>
             <header class="h2-nav">
-        <a class="h2-logo" href="#" id="h2Home"><img src="logo-mark.png" alt="" width="30" height="30"><span>ClassLoad</span></a>
-        <nav class="h2-links" aria-label="${t("Sections")}"><a href="#lp-how" data-lpgo="lp-how">${t("How it works")}</a><a href="#lp-try" data-lpgo="lp-try">${t("Try it yourself")}</a><a href="#lp-who" data-lpgo="lp-who">${t("Who it's for")}</a><a href="#lp-faq" data-lpgo="lp-faq">${t("Questions")}</a></nav>
+        <a class="h2-logo" href="#" id="h2Home"><img src="logo-mark.png" alt="" width="30" height="30"><span>CLASSLOAD</span></a>
+        <nav class="h2-links" aria-label="${t("Sections")}"><a href="#lp-how" data-lpgo="lp-how" class="on">${t("How it works")}</a><a href="#lp-try" data-lpgo="lp-try">${t("Try it yourself")}</a><a href="#lp-who" data-lpgo="lp-who">${t("Who it's for")}</a><a href="#lp-faq" data-lpgo="lp-faq">${t("Questions")}</a></nav>
         <div class="h2-right"><button type="button" class="h2-mini" id="h2Lang" aria-label="${t("Change language")}">${LANG==="bg"?"EN":"БГ"}</button><button type="button" class="h2-mini" id="h2Theme" aria-label="${t("Theme")}">${THEME==="dark"?"☾":THEME==="light"?"☀":"◐"}</button><button type="button" class="h2-signin" id="lpLogin">${t("Sign in")}</button><button type="button" class="h2-cta" id="lpStart">${t("Get started free")}</button></div>
       </header>
       <div class="h2-top">
@@ -3462,7 +3378,8 @@ function renderLanding(app){
           <a href="#lp-try" data-lpgo="lp-try" class="h2-explore"><span>${t("Try it yourself")}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></a></div>
       </div>
       <div class="h2-stage">
-                <div class="h2-devs" id="h2Devs">
+                <div class="h2-word" aria-hidden="true">CLASSLOAD</div>
+        <div class="h2-devs" id="h2Devs">
           <div class="dev dev-tab"><div class="dev-scr" data-w="640" data-h="460"><div class="dev-in" id="devTab"></div></div><p class="dev-cap">${t("Parent")} · ${t("8-week forecast")}</p></div>
           <div class="dev dev-lap"><div class="dev-scr" data-w="1000" data-h="625"><div class="dev-in" id="devLap"></div></div><div class="dev-base"></div><p class="dev-cap">${t("Teacher")} · ${t("Plan")}</p></div>
           <div class="dev dev-ph"><div class="dev-scr" data-w="300" data-h="620"><div class="dev-in" id="devPh"></div></div><p class="dev-cap">${t("Student")} · ${t("Upcoming")}</p></div>
@@ -3594,7 +3511,7 @@ function lpDevices(){
   if(nTests>2)msg=["bad",t("{n} tests this week. The limit is 2.",{n:nTests})];
   tests.forEach((k,i)=>{if(k>1)msg=["bad",t("{d}: {n} tests in one day. The limit is 1.",{d:names[i],n:k})]});
   // laptop: the teacher plans the week
-  lap.innerHTML=`<div class="dl-bar"><img src="logo-mark.png" alt="" width="22" height="22"><b>ClassLoad</b><span class="dl-q">${t("Search tasks…")}</span><span class="dl-role">${t("Teacher")}</span></div>
+  lap.innerHTML=`<div class="dl-bar"><img src="logo-mark.png" alt="" width="22" height="22"><b>CLASSLOAD</b><span class="dl-q">${t("Search tasks…")}</span><span class="dl-role">${t("Teacher")}</span></div>
     <div class="dl-body"><div class="dl-nav"><span class="on">${t("Plan")}</span><span>${t("My classes")}</span><span>${t("Assignments")}</span><span>${t("Timetable")}</span></div>
     <div class="dl-main"><div class="dl-hero"><div><small>${t("Class")}</small><b class="dl-cls">10Б</b></div>
       <div class="dl-lead">${t("This week is {lv} · {pts} pts",{lv:`<em class="${lv}">${devLvName(lv).toLowerCase()}</em>`,pts:total})}<div class="dl-meter"><i class="${lv}" style="width:${Math.min(100,total/12*100)}%"></i></div></div>
@@ -3677,7 +3594,7 @@ function howVideo(app){
 function lpReveal(root){
   const els=[...root.querySelectorAll(".lp-rv")];
   if(!("IntersectionObserver" in window)){els.forEach(e=>e.classList.add("in"));return}
-  els.forEach(e=>e.classList.add("in"));return;
+  root.classList.add("lp-anim");
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.12,rootMargin:"0px 0px -40px 0px"});
   els.forEach(e=>io.observe(e));
 }
@@ -3893,9 +3810,9 @@ function renderOwner(app){
   else body=ocOverview(C,ids);
   const hr=new Date().getHours(), nm=esc(String(S.user.displayName||"").trim().split(/\s+/)[0]||t("Owner"));
   const greet=hr<5?t("Working late, {name}?",{name:nm}):hr<12?t("Good morning, {name}",{name:nm}):hr<18?t("Good afternoon, {name}",{name:nm}):t("Good evening, {name}",{name:nm});
-  const stat=C.pendAdmin?["bad",t("{n} admin requests waiting",{n:C.pendAdmin})]:C.pend.length?["warn",t("{n} requests waiting",{n:C.pend.length})]:["ok",t("No requests waiting")];
+  const stat=C.pendAdmin?["bad",t("{n} admin requests waiting",{n:C.pendAdmin})]:C.pend.length?["warn",t("{n} requests waiting",{n:C.pend.length})]:["ok",t("All systems normal")];
   app.innerHTML=`<div class="oc">
-    <header class="oc-head oc-hq"><div class="oc-hq-l"><p class="oc-kicker">${t("Owner console")}</p>
+    <header class="oc-head oc-hq"><div class="oc-hq-l"><p class="oc-kicker"><span class="oc-live" aria-hidden="true"></span>ClassLoad // ${t("Owner console")}</p>
         <h1 class="oc-greet">${greet}</h1><p class="oc-sub">${t("Schools, people and access across ClassLoad.")}</p></div>
       <div class="oc-hq-r"><div class="oc-clock" aria-hidden="true"><b id="ocClock">${ocTime()}</b><small>${new Date().toLocaleDateString(LOC(),{weekday:"long",day:"numeric",month:"long"})}</small></div>
         <button type="button" class="oc-status ${stat[0]}" ${C.pend.length?'data-go="requests"':""}><i aria-hidden="true"></i>${stat[1]}</button>
@@ -3981,7 +3898,7 @@ function ocOverview(C,ids){
     <ul class="oc-chart">${act.map(id=>{const tot=ROLE_ORDER.reduce((s,r)=>s+sc0(C,id,r),0);return `<li><span class="oc-chart-l">${esc(S.schools[id].name)}</span><span class="oc-bar" title="${tot}">${ROLE_ORDER.map(r=>sc0(C,id,r)?`<i class="${r}" style="width:${sc0(C,id,r)/maxM*100}%" title="${roleName(r)}: ${sc0(C,id,r)}"></i>`:"").join("")}</span><b>${tot}</b></li>`}).join("")}</ul></section>`:"";
   return `${ocHero(C,act)}<div class="kpis oc-kpis">
       ${kpi(act.length,t("Active schools")+(ids.length-act.length?` · ${ids.length-act.length} ${t("archived")}`:""),"schools")}
-      ${kpi(noAdmin.length,t("Schools without an admin"),"schools",noAdmin.length?"warn":"")}
+      ${kpi(C.by.admin||0,t("School admins"),"users:admin")}${kpi(C.by.teacher||0,t("Teachers"),"users:teacher")}${kpi(C.by.student||0,t("Students"),"users:student")}${kpi(C.by.parent||0,t("Parents"),"users:parent")}
       ${kpi(C.pendAdmin,t("Admin requests waiting"),"requests",C.pendAdmin?"bad":"")}${kpi(C.pend.length,t("All requests waiting"),"requests")}</div>
     ${noAdmin.length?`<div class="oc-alert"><b>${t("{n} schools have no admin yet",{n:noAdmin.length})}</b> · ${noAdmin.map(id=>`<button class="link" data-osch="${esc(id)}">${esc(S.schools[id].name)}</button>`).join(", ")}</div>`:""}
     <div class="oc-grid">
