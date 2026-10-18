@@ -2247,6 +2247,13 @@ body.signed-in h1,body.signed-in h2,body.signed-in .week-head h3,body.signed-in 
 .flt-quick .fq-more{order:-1;margin-left:0}
 @media (max-width:640px){.kpi{flex-basis:42%}}
 @media (max-width:640px){.tl-row .pill{display:inline-flex;flex:none;font-size:11px;padding:2px 8px}}
+/* v38 signed-in app uses the full window */
+body.signed-in .wrap{max-width:none}
+@media (min-width:1100px){
+  body.signed-in{padding:0 28px}
+  body.signed-in .bar{margin:0 -28px;padding-left:28px;padding-right:28px}
+  body.signed-in .oc{max-width:none}
+}
 
 </style>
 </head>
