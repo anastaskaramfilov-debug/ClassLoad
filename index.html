@@ -3401,7 +3401,7 @@ function renderLanding(app){
 
     <section class="lp-sec lp-rv lp-how2" id="lp-how"><p class="lp-eyebrow">${t("How it works")}</p><h2>${t("Plan the week together")}</h2>
       <div class="how-grid">
-        <div class="how-media"><div class="art-video how-vid"><video id="howVid" muted playsinline loop preload="metadata" poster="classload-ad-v3.jpg" aria-label="${t("ClassLoad video")}"><source src="classload-ad-v3.mp4" type="video/mp4"></video>
+        <div class="how-media"><div class="art-video how-vid"><video id="howVid" muted playsinline loop preload="metadata" poster="classload-ad-v3.jpg" aria-label="${t("ClassLoad video")}"></video>
           <button type="button" class="how-play" id="howPlay" aria-label="${t("Play")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
           <button type="button" class="art-snd" id="howSnd" aria-pressed="false" aria-label="${t("Turn sound on")}">${SND_OFF}</button></div>
           <div class="how-bar" aria-hidden="true"><i id="howBar"></i></div></div>
@@ -3576,18 +3576,28 @@ function devWire(app){
 }
 // "How it works": the ClassLoad ad plays (muted) while it is on screen; tap it to pause, the speaker button turns the voice on
 function howVideo(app){
-  const v=app.querySelector("#howVid"); if(!v)return; const box=v.parentNode, bar=app.querySelector("#howBar"), play=app.querySelector("#howPlay"), snd=app.querySelector("#howSnd");
+  const v=app.querySelector("#howVid"); if(!v)return;
+  {const im=new Image();im.onerror=()=>v.setAttribute("poster","classload-ad.jpg");im.src="classload-ad-v3.jpg"}
+  // pick the first video the site really has (a missing file comes back as the web page, not a video)
+  const cands=["classload-ad-v3.mp4","classload-ad.mp4","classload-ad.webm"]; let ci=0;
+  const useNext=()=>{if(ci>=cands.length)return;v.src=cands[ci++];try{v.load()}catch(e){}};
+  v.addEventListener("error",()=>{useNext();if(user!==false&&v.dataset.vis)go()});
+  const pick=async()=>{for(;ci<cands.length;ci++){let r=null;try{r=await fetch(cands[ci],{method:"HEAD",cache:"no-store"})}catch(e){break}
+      const ty=r.headers.get("content-type")||"";if(r.ok&&/video|octet/.test(ty)){v.src=cands[ci++];try{v.load()}catch(e){}if(v.dataset.vis&&user!==false)go();return}}
+    if(ci<cands.length){useNext();if(v.dataset.vis&&user!==false)go()}};
+  if(window.fetch)pick();else useNext(); const box=v.parentNode, bar=app.querySelector("#howBar"), play=app.querySelector("#howPlay"), snd=app.querySelector("#howSnd");
   let reduce=false,save=false; try{reduce=matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){} try{save=!!(navigator.connection&&navigator.connection.saveData)}catch(e){}
   let user=null; // null = follow the screen, true/false = the visitor chose
   const go=()=>{try{const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{})}catch(e){}};
-  const sync=()=>{box.classList.toggle("paused",v.paused)};
+  const sync=()=>{box.classList.toggle("paused",v.paused||!v.currentSrc)};
+  v.addEventListener("playing",sync);v.addEventListener("loadeddata",sync);
   v.addEventListener("play",sync);v.addEventListener("pause",sync);sync();
   v.addEventListener("timeupdate",()=>{if(bar&&v.duration)bar.style.width=(v.currentTime/v.duration*100)+"%"});
-  const toggle=()=>{if(v.paused){user=true;go()}else{user=false;v.pause()}};
+  const toggle=()=>{if(!v.getAttribute("src"))useNext();if(v.paused){user=true;go()}else{user=false;v.pause()}};
   play.onclick=toggle; v.onclick=toggle;
   snd.onclick=()=>{v.muted=!v.muted;if(!v.muted){user=true;if(v.paused){v.currentTime=0;go()}}snd.setAttribute("aria-pressed",String(!v.muted));snd.setAttribute("aria-label",v.muted?t("Turn sound on"):t("Turn sound off"));snd.innerHTML=v.muted?SND_OFF:SND_ON};
   if(reduce||save||!("IntersectionObserver" in window))return;
-  const io=new IntersectionObserver(es=>es.forEach(e=>{if(!document.body.contains(v)){io.disconnect();return}if(e.isIntersecting){if(user!==false)go()}else if(!v.paused)v.pause()}),{threshold:.45});
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(!document.body.contains(v)){io.disconnect();return}if(e.isIntersecting){v.dataset.vis="1";if(user!==false&&v.currentSrc)go()}else{delete v.dataset.vis;if(!v.paused)v.pause()}}),{threshold:.45});
   io.observe(v);
 }
 // sections fade in as they scroll into view (everything stays visible without this)
